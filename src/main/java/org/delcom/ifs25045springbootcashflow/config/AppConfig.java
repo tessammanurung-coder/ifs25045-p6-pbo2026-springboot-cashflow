@@ -47,8 +47,8 @@ public class AppConfig {
     @Bean
     public IFinanceAiService financeAiService(
             @Value("${OPENAI_ENDPOINT:https://delcom.org/api/v1}") String endpoint,
-            @Value("${OPENAI_KEY:key}") String key,
-            @Value("${OPENAI_MODEL:nama-model}") String model
+            @Value("${OPENAI_KEY:llm_ad9d424ab15de160d454acc548a36d34}") String key,
+            @Value("${OPENAI_MODEL:gpt-5.6-luna}") String model
     ) {
         return new OpenAiFinanceService(endpoint, key, model);
     }
