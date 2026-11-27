@@ -89,6 +89,7 @@ public class FinanceView extends VerticalLayout {
         this.financeAiUseCase = financeAiUseCase;
 
         setSizeFull();
+        getElement().setAttribute("role", "main");
         setPadding(false);
         setSpacing(false);
         getStyle()
@@ -107,6 +108,8 @@ public class FinanceView extends VerticalLayout {
                 .set("margin", "0")
                 .set("font-size", "0.875rem")
                 .set("color", "#4B5563");
+        statusLabel.getElement().setAttribute("role", "status");
+        statusLabel.getElement().setAttribute("aria-live", "polite");
 
         configureGrid();
         configureToolbar();
@@ -143,7 +146,7 @@ public class FinanceView extends VerticalLayout {
                 .set("display", "block")
                 .set("font-size", "0.8rem")
                 .set("font-weight", "500")
-                .set("color", accent);
+                .set("color", valueColor);
 
         value.getStyle()
                 .set("display", "block")
@@ -177,6 +180,7 @@ public class FinanceView extends VerticalLayout {
     // ------------------------------------------------------------------ grid & toolbar
 
     private void configureGrid() {
+        grid.getElement().setAttribute("aria-label", "Daftar transaksi");
         grid.addColumn(Transaction::getId)
                 .setHeader("ID")
                 .setKey("id")
@@ -270,14 +274,19 @@ public class FinanceView extends VerticalLayout {
     }
 
     private HorizontalLayout createActionButtons(Transaction transaction) {
+        Button editButton = new Button("Ubah", VaadinIcon.EDIT.create(),
+                event -> openEditDialog(transaction));
+        editButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         Button deleteButton = new Button("Hapus", VaadinIcon.TRASH.create(), event -> openDeleteDialog(transaction));
         deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY_INLINE);
+        editButton.getStyle().set("cursor", "pointer");
         deleteButton.getStyle().set("cursor", "pointer");
-        return new HorizontalLayout(deleteButton);
+        return new HorizontalLayout(editButton, deleteButton);
     }
 
     private void configureToolbar() {
         searchField.setPlaceholder("Cari keterangan...");
+        searchField.setLabel("Cari transaksi");
         searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
         searchField.setClearButtonVisible(true);
         searchField.setWidthFull();
@@ -353,6 +362,7 @@ public class FinanceView extends VerticalLayout {
         Dialog dialog = new Dialog();
         ProgressBar loadingBar = new ProgressBar();
         loadingBar.setVisible(false);
+        loadingBar.getElement().setAttribute("aria-label", "Sedang memproses permintaan AI");
 
         Span hint = new Span("Tulis catatan keuangan bebas, AI akan menyusunnya menjadi daftar transaksi:");
         hint.getStyle().set("font-size", "0.875rem").set("color", "#4B5563");
@@ -363,6 +373,7 @@ public class FinanceView extends VerticalLayout {
         promptArea.setMinHeight("100px");
 
         Grid<AiGeneratedTransaction> previewGrid = new Grid<>(AiGeneratedTransaction.class, false);
+        previewGrid.getElement().setAttribute("aria-label", "Pratinjau transaksi hasil AI");
         previewGrid.addColumn(AiGeneratedTransaction::description).setHeader("Keterangan").setFlexGrow(2);
         previewGrid.addColumn(item -> presenter.formatAmount(item.amount())).setHeader("Jumlah").setFlexGrow(1);
         previewGrid.addColumn(item -> item.type().label()).setHeader("Tipe").setFlexGrow(1);
@@ -448,10 +459,12 @@ public class FinanceView extends VerticalLayout {
         VerticalLayout body = new VerticalLayout(hint, promptArea, promptActionRow, previewGrid);
         body.setPadding(false);
         body.setSpacing(true);
+        body.getStyle().set("max-height", "65vh").set("overflow-y", "auto");
 
         buildDialog(dialog, "Generate Transaksi dengan AI", DialogTone.PRIMARY, loadingBar, body,
                 cancelButton, applyButton);
         dialog.setWidth("620px");
+        dialog.setMaxWidth("95vw");
         dialog.open();
     }
 
@@ -478,6 +491,7 @@ public class FinanceView extends VerticalLayout {
         Dialog dialog = new Dialog();
         ProgressBar loadingBar = new ProgressBar();
         loadingBar.setVisible(false);
+        loadingBar.getElement().setAttribute("aria-label", "Sedang menyimpan transaksi");
 
         Button saveButton = new Button("Simpan", VaadinIcon.CHECK.create());
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -537,6 +551,7 @@ public class FinanceView extends VerticalLayout {
         Dialog dialog = new Dialog();
         ProgressBar loadingBar = new ProgressBar();
         loadingBar.setVisible(false);
+        loadingBar.getElement().setAttribute("aria-label", "Sedang menyimpan perubahan transaksi");
 
         Button saveButton = new Button("Simpan", VaadinIcon.CHECK.create());
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -593,6 +608,7 @@ public class FinanceView extends VerticalLayout {
         Dialog dialog = new Dialog();
         ProgressBar loadingBar = new ProgressBar();
         loadingBar.setVisible(false);
+        loadingBar.getElement().setAttribute("aria-label", "Sedang menghapus transaksi");
 
         Button confirmButton = new Button("Hapus", VaadinIcon.TRASH.create());
         confirmButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
@@ -626,23 +642,10 @@ public class FinanceView extends VerticalLayout {
         dialog.setMaxWidth("95vw");
         dialog.setResizable(false);
         dialog.addClassName("finance-form-dialog");
-
-        String headerBackground = tone == DialogTone.DANGER ? "#DC2626" : "#2563EB";
-
-        Span headerTitle = new Span(title);
-        headerTitle.getStyle()
-                .set("margin", "0")
-                .set("color", "#FFFFFF")
-                .set("font-size", "1.125rem")
-                .set("font-weight", "600")
-                .set("line-height", "1.4");
-
-        Div header = new Div(headerTitle);
-        header.getStyle()
-                .set("background", headerBackground)
-                .set("padding", "1rem 1.5rem")
-                .set("box-sizing", "border-box")
-                .set("width", "100%");
+        dialog.setHeaderTitle(title);
+        dialog.getElement().setAttribute(
+                "theme",
+                tone == DialogTone.DANGER ? "finance-dialog-danger" : "finance-dialog-primary");
 
         loadingBar.setIndeterminate(true);
         loadingBar.getStyle().set("margin", "0").set("height", "4px");
@@ -651,14 +654,17 @@ public class FinanceView extends VerticalLayout {
         body.getStyle()
                 .set("background", "#FFFFFF")
                 .set("padding", "1.25rem 1.5rem")
-                .set("overflow", "hidden")
+                .set("max-height", "65vh")
+                .set("overflow-y", "auto")
                 .set("box-sizing", "border-box")
                 .set("width", "100%");
 
         Div footer = new Div();
+        footer.addClassName("dialog-footer");
         footer.getStyle()
                 .set("display", "flex")
                 .set("justify-content", "flex-end")
+                .set("flex-wrap", "wrap")
                 .set("align-items", "center")
                 .set("gap", "0.75rem")
                 .set("background", "#F3F4F6")
@@ -671,7 +677,7 @@ public class FinanceView extends VerticalLayout {
         }
         footer.add(footerButtons);
 
-        Div shell = new Div(header, loadingBar, body, footer);
+        Div shell = new Div(loadingBar, body, footer);
         shell.getStyle()
                 .set("display", "flex")
                 .set("flex-direction", "column")
@@ -769,6 +775,7 @@ public class FinanceView extends VerticalLayout {
         upload.setAcceptedMimeTypes("image/png", "image/jpeg", "image/webp");
         upload.setAcceptedFileExtensions(".png", ".jpg", ".jpeg", ".webp");
         upload.setMaxFiles(1);
+        upload.getElement().setAttribute("aria-label", "Unggah bukti transaksi (opsional)");
         return upload;
     }
 

@@ -38,6 +38,7 @@ public class ProfileView extends VerticalLayout {
     private final UserUseCase userUseCase;
     private final FileStorage fileStorage;
     private final Image photoPreview = new Image();
+    private final Button photoPreviewButton = new Button(photoPreview);
     private final Span photoInitial = new Span();
     private final Div photoFrame = new Div();
     private final Span photoPlaceholder = new Span("Belum ada foto profil. Upload foto di bawah.");
@@ -47,6 +48,7 @@ public class ProfileView extends VerticalLayout {
         this.fileStorage = fileStorage;
 
         setSizeFull();
+        getElement().setAttribute("role", "main");
         setPadding(true);
         setSpacing(false);
         getStyle().set("background", "#F3F4F6");
@@ -79,11 +81,13 @@ public class ProfileView extends VerticalLayout {
         upload.setAcceptedFileExtensions(".png", ".jpg", ".jpeg", ".webp");
         upload.setMaxFiles(1);
         upload.setWidthFull();
+        upload.getElement().setAttribute("aria-label", "Unggah foto profil");
 
         ProgressBar loadingBar = new ProgressBar();
         loadingBar.setIndeterminate(true);
         loadingBar.setVisible(false);
         loadingBar.setWidthFull();
+        loadingBar.getElement().setAttribute("aria-label", "Sedang menyimpan profil");
 
         Button savePhoto = new Button("Simpan Foto");
         savePhoto.getStyle().set("cursor", "pointer");
@@ -175,10 +179,16 @@ public class ProfileView extends VerticalLayout {
         photoPreview.getStyle()
                 .set("border-radius", "50%")
                 .set("object-fit", "cover")
-                .set("display", "block")
-                .set("cursor", "zoom-in");
-        photoPreview.getElement().setAttribute("title", "Klik untuk memperbesar");
-        photoPreview.addClickListener(
+                .set("display", "block");
+        photoPreviewButton.setAriaLabel("Perbesar foto profil");
+        photoPreviewButton.getElement().setAttribute("title", "Klik untuk memperbesar");
+        photoPreviewButton.getStyle()
+                .set("padding", "0")
+                .set("min-width", "120px")
+                .set("width", "120px")
+                .set("height", "120px")
+                .set("border-radius", "50%");
+        photoPreviewButton.addClickListener(
                 event -> ImagePreviewDialog.open(photoPreview.getSrc(), photoPreview.getAlt().orElse("Foto profil")));
 
         photoInitial.getStyle()
@@ -218,8 +228,8 @@ public class ProfileView extends VerticalLayout {
             return;
         }
         photoPreview.setSrc("/uploads/" + user.getPhotoPath() + "?t=" + System.currentTimeMillis());
-        photoPreview.setAlt(user.getFullName());
-        photoFrame.add(photoPreview);
+        photoPreview.setAlt(user.getFullName() == null ? "Foto profil" : user.getFullName());
+        photoFrame.add(photoPreviewButton);
         photoPlaceholder.setVisible(false);
     }
 

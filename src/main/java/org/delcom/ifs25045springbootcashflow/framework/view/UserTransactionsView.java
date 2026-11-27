@@ -44,6 +44,7 @@ public class UserTransactionsView extends VerticalLayout implements HasUrlParame
         this.presenter = presenter;
 
         setSizeFull();
+        getElement().setAttribute("role", "main");
         setPadding(true);
         setSpacing(false);
         getStyle().set("background", "#F3F4F6");
@@ -69,6 +70,7 @@ public class UserTransactionsView extends VerticalLayout implements HasUrlParame
             return ImagePreviewDialog.clickableThumbnail("/uploads/" + tx.getProofPath(), "Bukti transaksi", "48px");
         }).setHeader("Bukti").setAutoWidth(true);
         grid.addColumn(presenter::formatCreatedAt).setHeader("Waktu").setAutoWidth(true);
+        grid.getElement().setAttribute("aria-label", "Daftar transaksi pengguna");
         grid.setSizeFull();
         GridStyles.apply(grid);
 

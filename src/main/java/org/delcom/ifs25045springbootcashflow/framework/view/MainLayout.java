@@ -2,6 +2,8 @@ package org.delcom.ifs25045springbootcashflow.framework.view;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
@@ -35,6 +37,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
     private final Image headerAvatarImage = new Image();
     private final Span headerAvatarInitial = new Span();
     private final Div headerAvatar = new Div();
+    private final Button headerAvatarButton = new Button();
 
     private record NavEntry(RouterLink link, String pathPrefix) {
     }
@@ -53,11 +56,13 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
         configureHeaderAvatar();
         refreshHeaderAvatar(AuthSession.currentUser().orElse(null));
 
-        HorizontalLayout header = new HorizontalLayout(new DrawerToggle(), brandTitle, headerAvatar);
+        HorizontalLayout header = new HorizontalLayout(new DrawerToggle(), brandTitle, headerAvatarButton);
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
         header.expand(brandTitle);
         header.setWidthFull();
         header.setPadding(true);
+        // Landmark banner agar seluruh isi header (logo, judul, avatar) berada di dalam landmark.
+        header.getElement().setAttribute("role", "banner");
         header.getStyle()
                 .set("background", "#FFFFFF")
                 .set("border-bottom", "1px solid #E5E7EB");
@@ -113,16 +118,24 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
         headerAvatar.removeAll();
         headerAvatar.add(headerAvatarInitial);
         headerAvatar.getStyle()
-                .set("cursor", "pointer")
                 .set("border", "2px solid #93C5FD")
                 .set("border-radius", "50%")
                 .set("overflow", "hidden")
                 .set("width", "40px")
                 .set("height", "40px")
                 .set("flex-shrink", "0");
-        headerAvatar.getElement().setAttribute("title", "Menu akun");
+        headerAvatarButton.setIcon(headerAvatar);
+        headerAvatarButton.setAriaLabel("Menu akun");
+        headerAvatarButton.getElement().setAttribute("title", "Menu akun");
+        headerAvatarButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        headerAvatarButton.getStyle()
+                .set("padding", "0")
+                .set("min-width", "40px")
+                .set("width", "40px")
+                .set("height", "40px")
+                .set("border-radius", "50%");
 
-        ContextMenu accountMenu = new ContextMenu(headerAvatar);
+        ContextMenu accountMenu = new ContextMenu(headerAvatarButton);
         accountMenu.setOpenOnClick(true);
 
         AuthSession.currentUser().ifPresent(user -> {
@@ -228,6 +241,8 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
         drawer.setSizeFull();
         drawer.setPadding(false);
         drawer.setSpacing(false);
+        drawer.getElement().setAttribute("role", "navigation");
+        drawer.getElement().setAttribute("aria-label", "Navigasi utama");
         drawer.getStyle()
                 .set("background", "#FFFFFF")
                 .set("border-right", "1px solid #E5E7EB");
@@ -328,12 +343,14 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
             RouterLink link = entry.link();
             if (active) {
                 link.getElement().setAttribute("data-active", "true");
+                link.getElement().setAttribute("aria-current", "page");
                 link.getStyle()
                         .set("background", "#DBEAFE")
                         .set("border", "1px solid #93C5FD");
                 styleNavChildren(link, "#1D4ED8", "#1E40AF", "600");
             } else {
                 link.getElement().setAttribute("data-active", "false");
+                link.getElement().removeAttribute("aria-current");
                 link.getStyle()
                         .set("background", "transparent")
                         .set("border", "1px solid transparent");

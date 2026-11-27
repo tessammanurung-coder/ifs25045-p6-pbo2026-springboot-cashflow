@@ -98,6 +98,7 @@ class FinanceViewTest {
         clickButton("Muat Ulang");
 
         TextField search = _get(TextField.class, spec -> spec.withPlaceholder("Cari keterangan..."));
+        assertEquals("Cari transaksi", search.getLabel());
         _setValue(search, "tidakada");
         clickButton("Cari");
         assertTrue(_get(Paragraph.class).getText().contains("Transaksi tidak ditemukan"));
@@ -109,6 +110,9 @@ class FinanceViewTest {
         clickButton("Muat Ulang");
         Grid<Transaction> grid = grid();
         assertEquals(2, grid.getListDataView().getItemCount());
+        assertEquals("Daftar transaksi", grid.getElement().getAttribute("aria-label"));
+        HorizontalLayout editActions = (HorizontalLayout) _getCellComponent(grid, 0, "tindakan");
+        _get(editActions, Button.class, spec -> spec.withCaption("Ubah"));
 
         _doubleClickItem(grid, 0);
         Dialog editDialog = _get(Dialog.class);

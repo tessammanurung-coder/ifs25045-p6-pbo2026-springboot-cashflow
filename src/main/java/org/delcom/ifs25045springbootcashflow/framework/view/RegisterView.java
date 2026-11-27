@@ -34,6 +34,7 @@ public class RegisterView extends VerticalLayout {
         }
 
         setSizeFull();
+        getElement().setAttribute("role", "main");
         setJustifyContentMode(JustifyContentMode.CENTER);
         setAlignItems(Alignment.CENTER);
         getStyle().set("background", "#F3F4F6");
@@ -53,6 +54,7 @@ public class RegisterView extends VerticalLayout {
         loadingBar.setIndeterminate(true);
         loadingBar.setVisible(false);
         loadingBar.setWidthFull();
+        loadingBar.getElement().setAttribute("aria-label", "Sedang memproses pendaftaran");
 
         Button registerButton = new Button("Daftar");
 

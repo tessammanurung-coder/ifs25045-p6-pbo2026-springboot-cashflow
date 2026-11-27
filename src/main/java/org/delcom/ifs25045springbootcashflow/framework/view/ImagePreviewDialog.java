@@ -25,27 +25,12 @@ final class ImagePreviewDialog {
 
         String title = alt == null || alt.isBlank() ? "Pratinjau Bukti" : alt;
 
-        Span headerTitle = new Span(title);
-        headerTitle.getStyle()
-                .set("margin", "0")
-                .set("color", "#FFFFFF")
-                .set("font-size", "1.125rem")
-                .set("font-weight", "600")
-                .set("line-height", "1.4");
-
         Span headerHint = new Span("Klik gambar untuk memperbesar / memperkecil");
         headerHint.getStyle()
-                .set("margin-top", "0.2rem")
-                .set("color", "#BFDBFE")
+                .set("margin", "0")
+                .set("color", "#475569")
                 .set("font-size", "0.8rem")
                 .set("display", "block");
-
-        Div header = new Div(headerTitle, headerHint);
-        header.getStyle()
-                .set("background", "#2563EB")
-                .set("padding", "0.9rem 1.5rem")
-                .set("box-sizing", "border-box")
-                .set("width", "100%");
 
         Image image = new Image(imageUrl, title);
         image.getStyle()
@@ -61,7 +46,16 @@ final class ImagePreviewDialog {
                 .set("user-select", "none");
         image.getElement().setAttribute("title", "Klik untuk zoom");
 
-        Div imageWrapper = new Div(image);
+        Button imageZoomButton = new Button(image);
+        imageZoomButton.setAriaLabel("Perbesar atau perkecil gambar: " + title);
+        imageZoomButton.getStyle()
+                .set("padding", "0")
+                .set("border", "0")
+                .set("background", "transparent")
+                .set("box-shadow", "none")
+                .set("max-width", "100%");
+
+        Div imageWrapper = new Div(imageZoomButton);
         imageWrapper.getStyle()
                 .set("display", "flex")
                 .set("justify-content", "center")
@@ -72,11 +66,13 @@ final class ImagePreviewDialog {
                 .set("width", "100%")
                 .set("box-sizing", "border-box");
 
-        Div body = new Div(imageWrapper);
+        Div body = new Div(headerHint, imageWrapper);
         body.getStyle()
                 .set("display", "flex")
+                .set("flex-direction", "column")
                 .set("justify-content", "center")
                 .set("align-items", "center")
+                .set("gap", "0.75rem")
                 .set("background", "#FFFFFF")
                 .set("padding", "1rem 1.25rem")
                 .set("box-sizing", "border-box")
@@ -88,6 +84,7 @@ final class ImagePreviewDialog {
         dialog.setCloseOnOutsideClick(true);
         dialog.setResizable(false);
         dialog.setMaxWidth("95vw");
+        dialog.setHeaderTitle(title);
 
         AtomicReference<Double> currentScale = new AtomicReference<>(1.0);
 
@@ -107,7 +104,7 @@ final class ImagePreviewDialog {
         };
 
         // Klik langsung pada gambar untuk toggle zoom
-        image.addClickListener(event -> {
+        imageZoomButton.addClickListener(event -> {
             if (currentScale.get() > 1.0) {
                 currentScale.set(1.0);
             } else {
@@ -133,9 +130,11 @@ final class ImagePreviewDialog {
         closeButton.getStyle().set("cursor", "pointer");
 
         Div footer = new Div(zoomOutButton, zoomInButton, closeButton);
+        footer.addClassName("dialog-footer");
         footer.getStyle()
                 .set("display", "flex")
                 .set("justify-content", "flex-end")
+                .set("flex-wrap", "wrap")
                 .set("align-items", "center")
                 .set("gap", "0.6rem")
                 .set("background", "#F3F4F6")
@@ -144,7 +143,7 @@ final class ImagePreviewDialog {
                 .set("box-sizing", "border-box")
                 .set("width", "100%");
 
-        Div shell = new Div(header, body, footer);
+        Div shell = new Div(body, footer);
         shell.getStyle()
                 .set("display", "flex")
                 .set("flex-direction", "column")
@@ -181,20 +180,28 @@ final class ImagePreviewDialog {
         dialog.open();
     }
 
-    static Image clickableThumbnail(String imageUrl, String alt, String height) {
+    static Button clickableThumbnail(String imageUrl, String alt, String height) {
         return clickableThumbnail(imageUrl, alt, height, "6px");
     }
 
-    static Image clickableThumbnail(String imageUrl, String alt, String height, String borderRadius) {
+    static Button clickableThumbnail(String imageUrl, String alt, String height, String borderRadius) {
         Image image = new Image(imageUrl, alt);
+        image.setWidth(height);
         image.setHeight(height);
         image.getStyle()
                 .set("border-radius", borderRadius)
                 .set("object-fit", "cover")
-                .set("cursor", "pointer")
                 .set("display", "block");
-        image.getElement().setAttribute("title", "Klik untuk memperbesar");
-        image.addClickListener(event -> open(imageUrl, alt));
-        return image;
+        Button previewButton = new Button(image, event -> open(imageUrl, alt));
+        previewButton.setAriaLabel("Perbesar gambar: " + alt);
+        previewButton.getElement().setAttribute("title", "Klik untuk memperbesar");
+        previewButton.getStyle()
+                .set("padding", "0")
+                .set("min-width", height)
+                .set("width", height)
+                .set("height", height)
+                .set("border-radius", borderRadius)
+                .set("overflow", "hidden");
+        return previewButton;
     }
 }

@@ -34,6 +34,7 @@ public class LoginView extends VerticalLayout {
         }
 
         setSizeFull();
+        getElement().setAttribute("role", "main");
         setJustifyContentMode(JustifyContentMode.CENTER);
         setAlignItems(Alignment.CENTER);
         getStyle().set("background", "#F3F4F6");
@@ -52,6 +53,7 @@ public class LoginView extends VerticalLayout {
         loadingBar.setIndeterminate(true);
         loadingBar.setVisible(false);
         loadingBar.setWidthFull();
+        loadingBar.getElement().setAttribute("aria-label", "Sedang memproses login");
 
         Button loginButton = new Button("Masuk");
         loginButton.setId("login-submit");
