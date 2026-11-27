@@ -203,7 +203,35 @@ pipeline {
         stage('Quality Gate') {
             steps {
                 timeout(time: 30, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
+                    script {
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            // Cetak penyebab kegagalan ke log Jenkins supaya tidak perlu membuka SonarQube
+                            withSonarQubeEnv('SonarQube') {
+                                sh '''
+                                    KEY="ifs25045-p6-pbo2026-springboot-cashflow"
+
+                                    echo "=== KONDISI QUALITY GATE ==="
+                                    curl -s -u "$SONAR_AUTH_TOKEN:" \
+                                        "$SONAR_HOST_URL/api/qualitygates/project_status?projectKey=$KEY" \
+                                        | sed 's/},{/},\\n{/g' || true
+
+                                    echo
+                                    echo "=== ISSUE (BELUM DISELESAIKAN) ==="
+                                    curl -s -u "$SONAR_AUTH_TOKEN:" \
+                                        "$SONAR_HOST_URL/api/issues/search?componentKeys=$KEY&resolved=false&ps=100" \
+                                        | sed 's/},{/},\\n{/g' || true
+
+                                    echo
+                                    echo "=== SECURITY HOTSPOT (TO_REVIEW) ==="
+                                    curl -s -u "$SONAR_AUTH_TOKEN:" \
+                                        "$SONAR_HOST_URL/api/hotspots/search?projectKey=$KEY&status=TO_REVIEW&ps=100" \
+                                        | sed 's/},{/},\\n{/g' || true
+                                '''
+                            }
+                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                        }
+                    }
                 }
             }
         }
