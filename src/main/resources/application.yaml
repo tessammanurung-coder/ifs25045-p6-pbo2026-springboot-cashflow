@@ -2,9 +2,9 @@ spring:
   application:
     name: ifs25045-p6-pbo2026-springboot-cashflow
   datasource:
-    url: jdbc:postgresql://localhost:5432/pbo2026_cashflow
-    username: postgres
-    password: tessa
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_DATABASE}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   sql:
     init:
@@ -20,6 +20,10 @@ spring:
 
 server:
   port: ${APP_PORT:${PORT:8080}}
+  compression:
+    enabled: true
+    mime-types: text/html,text/css,text/javascript,application/javascript,application/json,image/svg+xml
+    min-response-size: 1024
   servlet:
     session:
       timeout: 8h

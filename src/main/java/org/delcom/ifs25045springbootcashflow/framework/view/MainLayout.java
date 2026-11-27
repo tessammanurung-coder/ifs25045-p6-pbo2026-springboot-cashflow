@@ -241,6 +241,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
         drawer.setSizeFull();
         drawer.setPadding(false);
         drawer.setSpacing(false);
+        // Landmark navigation untuk seluruh drawer (brand + menu), bukan hanya daftar menunya.
         drawer.getElement().setAttribute("role", "navigation");
         drawer.getElement().setAttribute("aria-label", "Navigasi utama");
         drawer.getStyle()

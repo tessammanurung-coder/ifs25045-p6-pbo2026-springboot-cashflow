@@ -39,4 +39,3 @@ public class LoadingIndicatorInitListener implements VaadinServiceInitListener {
         });
     }
 }
-
