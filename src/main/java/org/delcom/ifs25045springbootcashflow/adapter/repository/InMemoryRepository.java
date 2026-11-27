@@ -13,16 +13,16 @@ import java.util.function.Predicate;
  * Menghilangkan duplikasi kode penyimpanan list dan pencarian untuk berbagai entitas.
  *
  * @param <T>  tipe entitas domain
- * @param <ID> tipe data identifier unik entitas
+ * @param <K> tipe data identifier unik entitas
  */
-public abstract class InMemoryRepository<T, ID> implements IRepository<T, ID> {
+public abstract class InMemoryRepository<T, K> implements IRepository<T, K> {
     /** Penyimpanan data entitas di memori. */
     protected final List<T> data = new ArrayList<>();
 
     /** Fungsi untuk mengekstrak ID dari objek entitas. */
-    private final Function<T, ID> idExtractor;
+    private final Function<T, K> idExtractor;
 
-    protected InMemoryRepository(Function<T, ID> idExtractor) {
+    protected InMemoryRepository(Function<T, K> idExtractor) {
         this.idExtractor = idExtractor;
     }
 
@@ -33,7 +33,7 @@ public abstract class InMemoryRepository<T, ID> implements IRepository<T, ID> {
     }
 
     @Override
-    public Optional<T> findById(ID id) {
+    public Optional<T> findById(K id) {
         return data.stream()
                 .filter(item -> idExtractor.apply(item).equals(id))
                 .findFirst();
@@ -46,7 +46,7 @@ public abstract class InMemoryRepository<T, ID> implements IRepository<T, ID> {
     }
 
     @Override
-    public boolean deleteById(ID id) {
+    public boolean deleteById(K id) {
         return data.removeIf(item -> idExtractor.apply(item).equals(id));
     }
 

@@ -29,6 +29,9 @@ import java.util.List;
 @Route(value = "user-transactions", layout = MainLayout.class)
 @PageTitle("Transaksi Pengguna")
 public class UserTransactionsView extends VerticalLayout implements HasUrlParameter<Integer>, BeforeEnterObserver {
+    private static final String STYLE_COLOR = "color";
+    private static final String STYLE_MARGIN = "margin";
+
 
     private final UserUseCase userUseCase;
     private final FinanceUseCase financeUseCase;
@@ -49,9 +52,9 @@ public class UserTransactionsView extends VerticalLayout implements HasUrlParame
         setSpacing(false);
         getStyle().set("background", "#F3F4F6");
 
-        title.getStyle().set("margin", "0");
-        summary.getStyle().set("margin", "0").set("color", "#1F2937").set("font-weight", "600");
-        empty.getStyle().set("margin", "0").set("color", "#4B5563");
+        title.getStyle().set(STYLE_MARGIN, "0");
+        summary.getStyle().set(STYLE_MARGIN, "0").set(STYLE_COLOR, "#1F2937").set("font-weight", "600");
+        empty.getStyle().set(STYLE_MARGIN, "0").set(STYLE_COLOR, "#4B5563");
 
         grid.addColumn(Transaction::getId).setHeader("ID").setAutoWidth(true).setFlexGrow(0);
         grid.addColumn(Transaction::getDescription).setHeader("Keterangan").setFlexGrow(1);
@@ -59,7 +62,7 @@ public class UserTransactionsView extends VerticalLayout implements HasUrlParame
             Span amount = new Span(presenter.formatAmount(tx.getAmount()));
             amount.getStyle()
                     .set("font-weight", "600")
-                    .set("color", tx.getType() == TransactionType.INCOME ? "#166534" : "#991B1B");
+                    .set(STYLE_COLOR, tx.getType() == TransactionType.INCOME ? "#166534" : "#991B1B");
             return amount;
         }).setHeader("Jumlah").setAutoWidth(true);
         grid.addColumn(tx -> tx.getType().label()).setHeader("Tipe").setAutoWidth(true);

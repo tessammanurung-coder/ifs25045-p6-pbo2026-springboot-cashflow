@@ -21,6 +21,8 @@ import java.util.function.Predicate;
  * Repository transaksi berbasis JDBC (PostgreSQL).
  */
 public class JdbcTransactionRepository implements ITransactionRepository {
+    private static final String SQL_SELECT = "SELECT ";
+
     private static final String COLUMNS = "id, user_id, description, amount, type, proof_path, created_at";
 
     private final DataSource dataSource;
@@ -31,7 +33,7 @@ public class JdbcTransactionRepository implements ITransactionRepository {
 
     @Override
     public List<Transaction> findAll() {
-        String sql = "SELECT " + COLUMNS + " FROM transactions ORDER BY created_at DESC, id DESC";
+        String sql = SQL_SELECT + COLUMNS + " FROM transactions ORDER BY created_at DESC, id DESC";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet rs = statement.executeQuery()) {
@@ -47,7 +49,7 @@ public class JdbcTransactionRepository implements ITransactionRepository {
 
     @Override
     public List<Transaction> findByUserId(int userId) {
-        String sql = "SELECT " + COLUMNS
+        String sql = SQL_SELECT + COLUMNS
                 + " FROM transactions WHERE user_id = ? ORDER BY created_at DESC, id DESC";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -66,7 +68,7 @@ public class JdbcTransactionRepository implements ITransactionRepository {
 
     @Override
     public Optional<Transaction> findById(Integer id) {
-        String sql = "SELECT " + COLUMNS + " FROM transactions WHERE id = ?";
+        String sql = SQL_SELECT + COLUMNS + " FROM transactions WHERE id = ?";
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet rs = null;

@@ -26,6 +26,8 @@ import org.delcom.ifs25045springbootcashflow.usecase.AuthUseCase;
 @Route("login")
 @PageTitle("Login")
 public class LoginView extends VerticalLayout {
+    private static final String STYLE_MARGIN = "margin";
+
 
     public LoginView(AuthUseCase authUseCase, IUserRepository userRepository) {
         if (AuthSession.currentUser(userRepository).isPresent()) {
@@ -82,10 +84,10 @@ public class LoginView extends VerticalLayout {
         password.addKeyUpListener(Key.ENTER, event -> submit.run());
 
         H1 title = new H1("Masuk");
-        title.getStyle().set("margin", "0");
+        title.getStyle().set(STYLE_MARGIN, "0");
 
         Paragraph subtitle = new Paragraph("Gunakan kredensial akun kamu untuk masuk");
-        subtitle.getStyle().set("margin", "0 0 0.15rem 0").set("color", "#4B5563");
+        subtitle.getStyle().set(STYLE_MARGIN, "0 0 0.15rem 0").set("color", "#4B5563");
 
         RouterLink registerLink = new RouterLink("Belum punya akun? Daftar", RegisterView.class);
         registerLink.getStyle()
@@ -105,8 +107,8 @@ public class LoginView extends VerticalLayout {
         form.setSpacing(false);
         form.setWidthFull();
         form.getStyle().set("gap", "0.45rem");
-        username.getStyle().set("margin", "0");
-        password.getStyle().set("margin", "0");
+        username.getStyle().set(STYLE_MARGIN, "0");
+        password.getStyle().set(STYLE_MARGIN, "0");
 
         Div card = new Div(form);
         card.getStyle()

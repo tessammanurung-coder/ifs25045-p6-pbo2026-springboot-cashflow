@@ -34,6 +34,13 @@ import java.util.concurrent.atomic.AtomicReference;
 @Route(value = "profile", layout = MainLayout.class)
 @PageTitle("Profil")
 public class ProfileView extends VerticalLayout {
+    private static final String STYLE_BACKGROUND = "background";
+    private static final String STYLE_BORDER_RADIUS = "border-radius";
+    private static final String STYLE_COLOR = "color";
+    private static final String STYLE_HEIGHT = "height";
+    private static final String STYLE_WIDTH = "width";
+    private static final String VALUE_120PX = "120px";
+
 
     private final UserUseCase userUseCase;
     private final FileStorage fileStorage;
@@ -51,7 +58,7 @@ public class ProfileView extends VerticalLayout {
         getElement().setAttribute("role", "main");
         setPadding(true);
         setSpacing(false);
-        getStyle().set("background", "#F3F4F6");
+        getStyle().set(STYLE_BACKGROUND, "#F3F4F6");
 
         User user = AuthSession.currentUser().orElseThrow();
 
@@ -146,10 +153,10 @@ public class ProfileView extends VerticalLayout {
         H1 title = new H1("Profil");
         title.getStyle().set("margin", "0");
         Paragraph subtitle = new Paragraph("Perbarui nama, password, dan foto profil.");
-        subtitle.getStyle().set("margin", "0").set("color", "#4B5563");
+        subtitle.getStyle().set("margin", "0").set(STYLE_COLOR, "#4B5563");
 
         Span photoLabel = new Span("Foto Profil");
-        photoLabel.getStyle().set("font-weight", "600").set("color", "#1F2937");
+        photoLabel.getStyle().set("font-weight", "600").set(STYLE_COLOR, "#1F2937");
 
         HorizontalLayout photoRow = new HorizontalLayout(photoFrame, photoPlaceholder);
         photoRow.setAlignItems(FlexComponent.Alignment.CENTER);
@@ -174,45 +181,45 @@ public class ProfileView extends VerticalLayout {
     }
 
     private void configurePhotoFrame() {
-        photoPreview.setWidth("120px");
-        photoPreview.setHeight("120px");
+        photoPreview.setWidth(VALUE_120PX);
+        photoPreview.setHeight(VALUE_120PX);
         photoPreview.getStyle()
-                .set("border-radius", "50%")
+                .set(STYLE_BORDER_RADIUS, "50%")
                 .set("object-fit", "cover")
                 .set("display", "block");
         photoPreviewButton.setAriaLabel("Perbesar foto profil");
         photoPreviewButton.getElement().setAttribute("title", "Klik untuk memperbesar");
         photoPreviewButton.getStyle()
                 .set("padding", "0")
-                .set("min-width", "120px")
-                .set("width", "120px")
-                .set("height", "120px")
-                .set("border-radius", "50%");
+                .set("min-width", VALUE_120PX)
+                .set(STYLE_WIDTH, VALUE_120PX)
+                .set(STYLE_HEIGHT, VALUE_120PX)
+                .set(STYLE_BORDER_RADIUS, "50%");
         photoPreviewButton.addClickListener(
                 event -> ImagePreviewDialog.open(photoPreview.getSrc(), photoPreview.getAlt().orElse("Foto profil")));
 
         photoInitial.getStyle()
-                .set("width", "120px")
-                .set("height", "120px")
-                .set("border-radius", "50%")
+                .set(STYLE_WIDTH, VALUE_120PX)
+                .set(STYLE_HEIGHT, VALUE_120PX)
+                .set(STYLE_BORDER_RADIUS, "50%")
                 .set("display", "inline-flex")
                 .set("align-items", "center")
                 .set("justify-content", "center")
-                .set("background", "#DBEAFE")
-                .set("color", "#1D4ED8")
+                .set(STYLE_BACKGROUND, "#DBEAFE")
+                .set(STYLE_COLOR, "#1D4ED8")
                 .set("font-weight", "700")
                 .set("font-size", "2.5rem");
 
         photoFrame.getStyle()
-                .set("width", "120px")
-                .set("height", "120px")
-                .set("border-radius", "50%")
+                .set(STYLE_WIDTH, VALUE_120PX)
+                .set(STYLE_HEIGHT, VALUE_120PX)
+                .set(STYLE_BORDER_RADIUS, "50%")
                 .set("overflow", "hidden")
                 .set("border", "3px solid #93C5FD")
                 .set("flex-shrink", "0")
-                .set("background", "#EFF6FF");
+                .set(STYLE_BACKGROUND, "#EFF6FF");
 
-        photoPlaceholder.getStyle().set("color", "#6B7280");
+        photoPlaceholder.getStyle().set(STYLE_COLOR, "#6B7280");
     }
 
     private void refreshPhoto(User user) {

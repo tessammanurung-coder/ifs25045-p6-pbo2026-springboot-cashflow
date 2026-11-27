@@ -23,6 +23,8 @@ import java.util.Map;
  * Implementasi {@link IFinanceAiService} yang memanggil endpoint HTTP kompatibel OpenAI.
  */
 public class OpenAiFinanceService implements IFinanceAiService {
+    private static final String KEY_CONTENT = "content";
+
 
     private final String endpoint;
     private final String apiKey;
@@ -108,8 +110,8 @@ public class OpenAiFinanceService implements IFinanceAiService {
             Map<String, Object> payload = Map.of(
                     "model", selectedModel,
                     "messages", List.of(
-                            Map.of("role", "system", "content", systemInstruction),
-                            Map.of("role", "user", "content", prompt)
+                            Map.of("role", "system", KEY_CONTENT, systemInstruction),
+                            Map.of("role", "user", KEY_CONTENT, prompt)
                     ),
                     "temperature", 0.3
             );
@@ -128,11 +130,11 @@ public class OpenAiFinanceService implements IFinanceAiService {
             }
 
             JsonNode message = choices.get(0).get("message");
-            if (message == null || message.get("content") == null) {
+            if (message == null || message.get(KEY_CONTENT) == null) {
                 throw new DomainException("Konten respon AI kosong");
             }
 
-            String content = stripMarkdownCodeFence(message.get("content").asText().trim());
+            String content = stripMarkdownCodeFence(message.get(KEY_CONTENT).asText().trim());
             JsonNode arrayNode = objectMapper.readTree(content);
             if (!arrayNode.isArray()) {
                 throw new DomainException("Format konten respon AI bukan merupakan JSON array");
