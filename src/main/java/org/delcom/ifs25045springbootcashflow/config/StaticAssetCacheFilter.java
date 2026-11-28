@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -20,12 +21,21 @@ import java.io.IOException;
 @Component
 public class StaticAssetCacheFilter extends OncePerRequestFilter {
 
-    static final String BUILD_PATH_PREFIX = "/VAADIN/build/";
     static final String IMMUTABLE_CACHE = "public, max-age=31536000, immutable";
+
+    private final String pathPrefix;
+
+    /**
+     * @param pathPrefix awalan URL berkas build yang aman di-cache lama; dapat diubah lewat
+     *                   properti {@code app.static-cache.path-prefix}
+     */
+    public StaticAssetCacheFilter(@Value("${app.static-cache.path-prefix:/VAADIN/build/}") String pathPrefix) {
+        this.pathPrefix = pathPrefix;
+    }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return !request.getRequestURI().startsWith(BUILD_PATH_PREFIX);
+        return !request.getRequestURI().startsWith(pathPrefix);
     }
 
     @Override

@@ -11,10 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StaticAssetCacheFilterTest {
 
-    private static final String BUILD_FILE = "/VAADIN/build/app-abc123.js";
+    private static final String BUILD_PATH = "/VAADIN/build/";
+    private static final String BUILD_FILE = BUILD_PATH + "app-abc123.js";
     private static final String OTHER_HEADER = "X-Other";
 
-    private final StaticAssetCacheFilter filter = new StaticAssetCacheFilter();
+    private final StaticAssetCacheFilter filter = new StaticAssetCacheFilter(BUILD_PATH);
 
     @Test
     void setHeaderOnBuildFileForcesImmutableCache() throws Exception {
