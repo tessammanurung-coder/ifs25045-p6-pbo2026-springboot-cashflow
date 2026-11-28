@@ -1,5 +1,7 @@
 package org.delcom.ifs25045springbootcashflow;
 
+import com.vaadin.flow.component.page.Inline;
+import com.vaadin.flow.server.AppShellSettings;
 import org.delcom.ifs25045springbootcashflow.adapter.presenter.FinancePresenter;
 import org.delcom.ifs25045springbootcashflow.domain.repository.ITransactionRepository;
 import org.delcom.ifs25045springbootcashflow.domain.repository.IUserRepository;
@@ -18,9 +20,11 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -61,6 +65,16 @@ class AppTest {
     @Test
     void rootAdminIsSeededFromConfiguration() {
         assertTrue(userRepository.findByUsername("admin").orElseThrow().isAdmin());
+    }
+
+    @Test
+    void configurePageInjectsBootScript() {
+        AppShellSettings settings = mock(AppShellSettings.class);
+
+        new App().configurePage(settings);
+
+        verify(settings).addInlineWithContents(
+                eq(Inline.Position.PREPEND), contains("boot-placeholder"), eq(Inline.Wrapping.JAVASCRIPT));
     }
 
     @Test

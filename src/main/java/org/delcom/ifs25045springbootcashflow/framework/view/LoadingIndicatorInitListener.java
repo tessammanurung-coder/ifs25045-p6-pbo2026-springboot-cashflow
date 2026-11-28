@@ -12,6 +12,10 @@ import org.springframework.stereotype.Component;
 public class LoadingIndicatorInitListener implements VaadinServiceInitListener {
 
     static final String LANDMARK_SCRIPT = """
+            const boot = document.getElementById('boot-placeholder');
+            if (boot) {
+              boot.remove();
+            }
             const markIndicator = () => {
               document.querySelectorAll('vaadin-connection-indicator').forEach(el => {
                 if (el.getAttribute('role') !== 'region') {
@@ -33,8 +37,7 @@ public class LoadingIndicatorInitListener implements VaadinServiceInitListener {
             conf.setSecondDelay(600);
             conf.setThirdDelay(1500);
             uiEvent.getUI().getPage().executeJs("document.documentElement.lang = 'id'");
-            // vaadin-connection-indicator dibuat Vaadin di luar landmark manapun (aturan axe "region").
-            // Dijadikan landmark region berlabel agar semua konten halaman berada di dalam landmark.
+            // Hapus placeholder awal (App.BOOT_SCRIPT) dan pastikan indikator koneksi berada di landmark.
             uiEvent.getUI().getPage().executeJs(LANDMARK_SCRIPT);
         });
     }
